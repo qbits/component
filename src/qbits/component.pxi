@@ -89,8 +89,8 @@
   vectors specifying the dependencies of the component at that key in
   the system, as per 'using'."
   [system dependency-map]
-  (reduce-kv
-   (fn [system key dependencies]
+  (reduce
+   (fn [system [key dependencies]]
      (let [component (get-component system key)]
        (assoc system key (using component dependencies))))
    system
@@ -101,7 +101,7 @@
   qbits.dependency, for the components found by
   (select-keys system component-keys)"
   [system component-keys]
-  (reduce-kv (fn [graph key component]
+  (reduce (fn [graph [key component]]
                (reduce #(dep/depend %1 key %2)
                        graph
                        (vals (dependencies component))))
@@ -113,7 +113,7 @@
     (assoc component dependency-key dependency)))
 
 (defn assoc-dependencies [component system]
-  (reduce-kv #(assoc-dependency system %1 %2 %3)
+  (reduce #(assoc-dependency system %1 (key %2) (val %2))
              component
              (dependencies component)))
 

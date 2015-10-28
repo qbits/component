@@ -200,23 +200,19 @@
   "True if the error has ex-data indicating it was thrown by something
   in the com.stuartsierra.component namespace."
   [error]
-  (let [{:keys [reason]} (ex-data error)]
-    (and (keyword? reason)
-         (= "com.stuartsierra.component"
-            (namespace reason)))))
+  (some-> error first namespace (= "qbits.component")))
 
-(comment
-  (defn ex-without-components
-   "If the error has ex-data provided by the com.stuartsierra.component
+(defn ex-without-components
+  "If the error has ex-data provided by the com.stuartsierra.component
   namespace, returns a new exception instance with the :component
   and :system removed from its ex-data. Preserves the other details of
   the original error. If the error was not created by this namespace,
   returns it unchanged. Use this when you want to catch and rethrow
   exceptions without including the full component or system."
-   [error]
-   (if (ex-component? error)
-     (platform/alter-ex-data error dissoc :component :system)
-     error)))
+  [error]
+  (if (ex-component? error)
+    (update-in error [2] dissoc :component :system)
+    error))
 
 ;; Copyright © 2015 Stuart Sierra
 

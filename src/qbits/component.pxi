@@ -98,7 +98,7 @@
 
 (defn dependency-graph
   "Returns a dependency graph, using the data structures defined in
-  com.stuartsierra.dependency, for the components found by
+  qbits.dependency, for the components found by
   (select-keys system component-keys)"
   [system component-keys]
   (reduce-kv (fn [graph key component]
@@ -192,18 +192,18 @@
   with large objects. As a consequence, printed system maps cannot be
   'read'. To disable this behavior and print system maps like normal
   records, call
-  (remove-method clojure.core/print-method com.stuartsierra.component.SystemMap)"
+  (remove-method clojure.core/print-method qbits.component.SystemMap)"
   [& keyvals]
   (map->SystemMap (apply hash-map keyvals)))
 
 (defn ex-component?
   "True if the error has ex-data indicating it was thrown by something
-  in the com.stuartsierra.component namespace."
+  in the qbits.component namespace."
   [error]
   (some-> error first namespace (= "qbits.component")))
 
 (defn ex-without-components
-  "If the error has ex-data provided by the com.stuartsierra.component
+  "If the error has ex-data provided by the qbits.component
   namespace, returns a new exception instance with the :component
   and :system removed from its ex-data. Preserves the other details of
   the original error. If the error was not created by this namespace,

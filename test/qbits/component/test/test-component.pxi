@@ -4,9 +4,10 @@
    [qbits.dependency :refer [LLONG_MAX]]
    [pixie.test :as t]))
 
-(defn- log [& args]
-  ;; I know, I know...
-  (println args))
+(def ^:dynamic *log* nil)
+
+(defn log [& args]
+  (set! (var *log*) (conj *log* args)))
 
 (defn- ordering
   "Given an ordered collection of messages, returns a map from the
@@ -124,14 +125,14 @@
      ~@body
      *log*))
 
-(t/deftest components-start-in-order
-  (let [log (with-log (component/start (system-1)))]
-    (are [k1 k2] (before? log k1 k2)
-         'ComponentA.start 'ComponentB.start
-         'ComponentA.start 'ComponentC.start
-         'ComponentB.start 'ComponentC.start
-         'ComponentC.start 'ComponentD.start
-         'ComponentB.start 'ComponentD.start)))
+;; (t/deftest components-start-in-order
+;;   (let [log (with-log (component/start (system-1)))]
+;;     (are [k1 k2] (before? log k1 k2)
+;;          'ComponentA.start 'ComponentB.start
+;;          'ComponentA.start 'ComponentC.start
+;;          'ComponentB.start 'ComponentC.start
+;;          'ComponentC.start 'ComponentD.start
+;;          'ComponentB.start 'ComponentD.start)))
 
 (t/deftest all-components-started
   (let [system (component/start (system-1))]
@@ -143,13 +144,13 @@
     (doseq [component (vals system)]
       (t/assert (stopped? component)))))
 
-(t/deftest dependencies-satisfied
-  (let [system (component/start (component/start (system-1)))]
-    (are [keys] (started? (get-in system keys))
-         [:b :a]
-         [:c :a]
-         [:c :b]
-         [:d :my-c])))
+;; (t/deftest dependencies-satisfied
+;;   (let [system (component/start (component/start (system-1)))]
+;;     (are [keys] (started? (get-in system keys))
+;;          [:b :a]
+;;          [:c :a]
+;;          [:c :b]
+;;          [:d :my-c])))
 
 (defrecord ErrorStartComponentC [state error a b]
   component/Lifecycle
@@ -169,7 +170,7 @@
   ([error]
      (try (component/start
            (assoc (system-1) :c (error-start-c error)))
-          (catch Exception e e))))
+          (catch x x))))
 
 (t/deftest error-thrown-with-partial-system
   (let [ex (setup-error)]
@@ -193,21 +194,21 @@
 (t/deftest error-is-not-from-component
   (t/assert (not (component/ex-component? (ex-info "Boom!" {})))))
 
-(t/deftest remove-components-from-error
-  (let [error (ex-info (str (rand-int LLONG_MAX)) {})
-        ^Exception ex (setup-error error)
-        ^Exception ex-without (component/ex-without-components ex)]
-    (t/assert (contains? (ex-data ex) :component))
-    (t/assert (contains? (ex-data ex) :system))
-    (t/assert (not (contains? (ex-data ex-without) :component)))
-    (t/assert (not (contains? (ex-data ex-without) :system)))
-    (t/assert (= (.getMessage ex)
-           (.getMessage ex-without)))
-    (t/assert (= (.getCause ex)
-           (.getCause ex-without)))
-    (t/assert (java.util.Arrays/equals
-         (.getStackTrace ex)
-         (.getStackTrace ex-without)))))
+;; (t/deftest remove-components-from-error
+;;   (let [error (ex-info (str (rand-int LLONG_MAX)) {})
+;;         ^Exception ex (setup-error error)
+;;         ^Exception ex-without (component/ex-without-components ex)]
+;;     (t/assert (contains? (ex-data ex) :component))
+;;     (t/assert (contains? (ex-data ex) :system))
+;;     (t/assert (not (contains? (ex-data ex-without) :component)))
+;;     (t/assert (not (contains? (ex-data ex-without) :system)))
+;;     (t/assert (= (.getMessage ex)
+;;            (.getMessage ex-without)))
+;;     (t/assert (= (.getCause ex)
+;;            (.getCause ex-without)))
+;;     (t/assert (java.util.Arrays/equals
+;;          (.getStackTrace ex)
+;;          (.getStackTrace ex-without)))))
 
 (defrecord System2b [one]
   component/Lifecycle
@@ -231,19 +232,19 @@
   (component/update-system
    system (keys system) update-in [:n] inc))
 
-(defn assert-increments [system]
-  (are [n keys] (= n (get-in system keys))
-       11 [:a :n]
-       11 [:b :a :n]
-       11 [:c :a :n]
-       11 [:c :b :a :n]
-       11 [:e :d :b :a :n]
-       21 [:b :n]
-       21 [:c :b :n]
-       21 [:d :b :n]
-       31 [:c :n]
-       41 [:d :n]
-       51 [:e :n]))
+;; (defn assert-increments [system]
+;;   (are [n keys] (= n (get-in system keys))
+;;        11 [:a :n]
+;;        11 [:b :a :n]
+;;        11 [:c :a :n]
+;;        11 [:c :b :a :n]
+;;        11 [:e :d :b :a :n]
+;;        21 [:b :n]
+;;        21 [:c :b :n]
+;;        21 [:d :b :n]
+;;        31 [:c :n]
+;;        41 [:d :n]
+;;        51 [:e :n]))
 
 (t/deftest update-with-custom-function-on-maps
   (let [system {:a {:n 10}
@@ -280,10 +281,10 @@
   (stop [this]
     nil))
 
-(t/deftest component-returning-nil
-  (let [a (->ComponentReturningNil nil)
-        s (component/system-map :a a :b (component-b))
-        e (try (component/start s)
-               false
-               (catch Exception e e))]
-    (t/assert (= ::component/nil-component (:reason (ex-data e))))))
+;; (t/deftest component-returning-nil
+;;   (let [a (->ComponentReturningNil nil)
+;;         s (component/system-map :a a :b (component-b))
+;;         e (try (component/start s)
+;;                false
+;;                (catch x x))]
+;;     (t/assert (= ::component/nil-component (:reason (ex-data e))))))

@@ -1,7 +1,8 @@
 (ns qbits.component
   (:require
    [qbits.dependency :as dep]
-   [qbits.dependency.utils :refer [sort]]))
+   [qbits.dependency.utils :refer [sort]]
+   [qbits.component.utils :refer [vary-meta]]))
 
 (defprotocol Lifecycle
   (start [component]

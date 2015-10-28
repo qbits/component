@@ -1,0 +1,5 @@
+{:name cc.qbits/component
+ :version "0.1.0-alpha"
+ :description "Managed lifecycle of stateful objects in Pixie"
+ :dependencies [[mpenet/dependency "0.1.1-alpha"]]
+ :source-paths ["src"]}

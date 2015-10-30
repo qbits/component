@@ -14,16 +14,19 @@
   component."))
 
 (declare start-system stop-system)
+(defn system?
+  [this]
+  (some-> this meta ::system?))
 
 ;; No-op implementation if one is not defined.
 (extend-protocol Lifecycle
   IObject
   (start [this]
-    (if (some-> this meta ::system?)
+    (if (system? this)
       (start-system this)
       this))
   (stop [this]
-    (if (some-> this meta ::system?)
+    (if (system? this)
       (stop-system this)
       this)))
 

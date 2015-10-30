@@ -1,8 +1,7 @@
 (ns qbits.component
   (:require
    [qbits.dependency :as dep]
-   [qbits.dependency.utils :refer [sort]]
-   [qbits.component.utils :refer [vary-meta]]))
+   [qbits.dependency.utils :refer [sort]]))
 
 (defprotocol Lifecycle
   (start [component]
@@ -130,7 +129,7 @@
                     :system-key key
                     :component component
                     :system system}
-                   t]))))
+                   (pst t)]))))
 
 (defn update-system
   "Invokes (apply f component args) on each of the components at
@@ -178,14 +177,7 @@
   ([system component-keys]
      (update-system-reverse system component-keys (var stop))))
 
-(defrecord SystemMap []
-  Lifecycle
-  (start [system]
-    (start-system system))
-  (stop [system]
-    (stop-system system)))
-
-(defn system-map
+(def system-map
   "Returns a system constructed of key/value pairs. The system has
   default implementations of the Lifecycle 'start' and 'stop' methods
   which recursively start/stop all components in the system.
@@ -194,8 +186,7 @@
   'read'. To disable this behavior and print system maps like normal
   records, call
   (remove-method clojure.core/print-method qbits.component.SystemMap)"
-  [& keyvals]
-  (map->SystemMap (apply hash-map keyvals)))
+  hash-map)
 
 (defn ex-component?
   "True if the error has ex-data indicating it was thrown by something

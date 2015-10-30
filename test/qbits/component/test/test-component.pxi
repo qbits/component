@@ -230,14 +230,14 @@
     ;; (assert (started? (get-in one [:b :a])))
     this))
 
-;; (defn system-2 []
-;;   (component/system-map :alpha (system-1)
-;;                         :beta (component/using (->System2b nil)
-;;                                 {:one :alpha})))
+(defn system-2 []
+  (component/system-map :alpha (system-1)
+                        :beta (component/using (->System2b nil)
+                                {:one :alpha})))
 
-;; (t/deftest composed-systems
-;;   (let [system (component/start (system-2))]
-;;     (t/assert (get-in system [:beta :one :d :my-c]))))
+(t/deftest composed-systems
+  (let [system (component/start (system-2))]
+    (t/assert (get-in system [:beta :one :d :my-c]))))
 
 (defn increment-all-components [system]
   (component/update-system

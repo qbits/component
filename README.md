@@ -3,11 +3,7 @@
 This is a direct port of https://github.com/stuartsierra/component for Pixie.
 
 Nearly complete but it's a work in progress. Nearly all of the tests
-from the original repo run.
-
-There are a few things not supported due to pixie internals such as
-nested systems, and the error/exception helpers but this will be fixed
-in the next few days.
+from the original repo run, minus the exception handling sugar.
 
 ## Copyright and License
 

@@ -13,13 +13,19 @@
   until the component is stopped. Returns an updated version of this
   component."))
 
+(declare start-system stop-system)
+
 ;; No-op implementation if one is not defined.
 (extend-protocol Lifecycle
   IObject
   (start [this]
-    this)
+    (if (some-> this meta ::system?)
+      (start-system this)
+      this))
   (stop [this]
-    this))
+    (if (some-> this meta ::system?)
+      (stop-system this)
+      this)))
 
 (defn dependencies
   "Returns the map of other components on which this component depends."
@@ -177,7 +183,7 @@
   ([system component-keys]
      (update-system-reverse system component-keys (var stop))))
 
-(def system-map
+(defn system-map
   "Returns a system constructed of key/value pairs. The system has
   default implementations of the Lifecycle 'start' and 'stop' methods
   which recursively start/stop all components in the system.
@@ -186,7 +192,9 @@
   'read'. To disable this behavior and print system maps like normal
   records, call
   (remove-method clojure.core/print-method qbits.component.SystemMap)"
-  hash-map)
+  [& keyvals]
+  (with-meta (apply hash-map keyvals)
+    {::system? true}))
 
 (defn ex-component?
   "True if the error has ex-data indicating it was thrown by something

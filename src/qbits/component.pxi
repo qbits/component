@@ -52,11 +52,11 @@
     (vector? dependencies)
       (into {} (map (fn [x] [x x]) dependencies))
     :else
-    (throw [::InvalidDependencies
-            "Dependencies must be a map or vector"
-            {:reason ::invalid-dependencies
+    (throw [{:type ::InvalidDependencies
+             :reason ::invalid-dependencies
              :component component
-             :dependencies dependencies}]))))
+             :dependencies dependencies}
+            "Dependencies must be a map or vector"]))))
 
 (defn nil-component [system key]
   [NilComponent (str "Component " key " was nil in system; maybe it returned nil from start or stop")
@@ -69,11 +69,11 @@
     (when (nil? component)
       (throw (nil-component system key)))
     (when (= ::not-found component)
-      (throw [::MissingComponent
-              (str "Missing component " key " from system")
-              {:reason ::missing-component
+      (throw [{:type ::MissingComponent
+               :reason ::missing-component
                :system-key key
-               :system system}]))
+               :system system}
+              (str "Missing component " key " from system")]))
     component))
 
 (defn get-dependency [system system-key component dependency-key]
@@ -81,15 +81,15 @@
     (when (nil? component)
       (throw (nil-component system system-key)))
     (when (= ::not-found component)
-      (throw [::MissingDependency
-              (str "Missing dependency " dependency-key
-                   " of " (type component)
-                   " expected in system at " system-key)
-              {:reason ::missing-dependency
+      (throw [{:type ::MissingDependency
+               :reason ::missing-dependency
                :system-key key
                :dependency-key dependency-key
                :component component
-               :system system}]))
+               :system system}
+              (str "Missing dependency " dependency-key
+                   " of " (type component)
+                   " expected in system at " system-key)]))
     component))
 
 (defn system-using
@@ -129,16 +129,15 @@
 (defn try-action [component system key f args]
   (try (apply f component args)
        (catch t
-           (throw [::ComponentFunctionThrewException
-                   (str "Error in component " key
-                        " in system " (type system)
-                        " calling " f)
-                   {:reason ::component-function-threw-exception
+           (throw [{:type ::ComponentFunctionThrewException
+                    :reason ::component-function-threw-exception
                     :function f
                     :system-key key
                     :component component
                     :system system}
-                   (pst t)]))))
+                   (str "Error in component " key
+                        " in system " (type system)
+                        " calling " f)]))))
 
 (defn update-system
   "Invokes (apply f component args) on each of the components at
@@ -203,7 +202,7 @@
   "True if the error has ex-data indicating it was thrown by something
   in the qbits.component namespace."
   [error]
-  (some-> error first namespace (= "qbits.component")))
+  (some-> error ex-data :type namespace (= "qbits.component")))
 
 (defn ex-without-components
   "If the error has ex-data provided by the qbits.component

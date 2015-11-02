@@ -59,10 +59,11 @@
             "Dependencies must be a map or vector"]))))
 
 (defn nil-component [system key]
-  [NilComponent (str "Component " key " was nil in system; maybe it returned nil from start or stop")
-   {:reason ::nil-component
+  [{:type ::NilComponent
+    :reason ::nil-component
     :system-key key
-    :system system}])
+    :system system}
+   (str "Component " key " was nil in system; maybe it returned nil from start or stop")])
 
 (defn get-component [system key]
   (let [component (get system key ::not-found)]

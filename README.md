@@ -2,8 +2,14 @@
 
 This is a direct port of https://github.com/stuartsierra/component for Pixie.
 
-Nearly complete but it's a work in progress. Nearly all of the tests
-from the original repo run, minus the exception handling sugar.
+There are only 2 minor differences:
+
+* systems are regular maps and can only be declared via `system-map`
+* pixie's records do not allow to add/use undeclared fields, so you
+  must declare your "locals" in the record definition (it's better
+  like this anyway).
+
+The rest is 100% compatible.
 
 ## Copyright and License
 

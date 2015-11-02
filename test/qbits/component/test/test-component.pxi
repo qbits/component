@@ -181,17 +181,17 @@
     (t/assert (started? (-> ex ex-data :component :b)))))
 
 ;; (t/deftest error-thrown-with-cause
-;;   (let [error (ex-info "Boom!" {})
+;;   (let [error [{} "Boom!"]
 ;;         ex (setup-error error)]
 ;;     (t/assert (identical? error (.getCause ^Exception ex)))))
 
 ;; (t/deftest error-is-from-component
-;;   (let [error (ex-info "Boom!" {})
+;;   (let [error [{} "Boom!"]
 ;;         ex (setup-error error)]
 ;;     (t/assert (component/ex-component? ex))))
 
 ;; (t/deftest error-is-not-from-component
-;;   (t/assert (not (component/ex-component? (ex-info "Boom!" {})))))
+;;   (t/assert (not (component/ex-component? [{} "Boom!"]))))
 
 ;; (t/deftest remove-components-from-error
 ;;   (let [error (ex-info (str (rand-int LLONG_MAX)) {})
@@ -285,6 +285,4 @@
         s (component/system-map :a a :b (component-b))
         e (try (component/start s)
                (catch x x))]
-    ;; (prn (ex-data e))x
-    ;; (t/assert (= ::component/nil-component (:reason (ex-data e))))
-    ))
+    (t/assert (= ::component/nil-component (:reason (ex-data e))))))

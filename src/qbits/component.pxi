@@ -214,7 +214,7 @@
   exceptions without including the full component or system."
   [error]
   (if (ex-component? error)
-    (update-in error [2] dissoc :component :system)
+    (update-in error dissoc :component :system)
     error))
 
 ;; Copyright © 2015 Stuart Sierra

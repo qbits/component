@@ -11,6 +11,15 @@ There are only 2 minor differences:
 
 The rest is 100% compatible.
 
+## Installation
+
+With [dust](https://github.com/pixie-lang/dust), add the following to
+your project.edn `:dependencies`:
+
+```clojure
+[mpenet/component "0.1.1-alpha"]
+```
+
 ## Copyright and License
 
 The MIT License (MIT)
